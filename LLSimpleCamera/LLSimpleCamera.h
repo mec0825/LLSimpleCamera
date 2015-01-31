@@ -62,6 +62,11 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL tapToFocus;
 
 /**
+ * Set NO if you don't want to enable exposure. Disabled by default.
+ */
+@property (nonatomic) BOOL exposureEnable;
+
+/**
  * Returns an instance of LLSimpleCamera with the given quality.
  * @param quality The quality of the camera.
  */
