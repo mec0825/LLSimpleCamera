@@ -32,6 +32,7 @@
         self.cameraPosition = position;
         self.fixOrientationAfterCapture = NO;
         self.tapToFocus = YES;
+        self.exposureEnable = NO;
     }
     
     return self;
@@ -105,6 +106,11 @@
     // focus
     CGPoint pointOfInterest = [self convertToPointOfInterestFromViewCoordinates:touchedPoint];
     [self focusAtPoint:pointOfInterest];
+    
+    // exposure
+    if(self.exposureEnable) {
+        [self exposureAtPoint:pointOfInterest];
+    }
     
     // show the box
     [self showFocusBox:touchedPoint];
@@ -418,6 +424,27 @@
         if ([device lockForConfiguration:&error]) {
             device.focusPointOfInterest = point;
             device.focusMode = AVCaptureFocusModeAutoFocus;
+            [device unlockForConfiguration];
+        }
+        
+        if(error && self.onError) {
+            self.onError(self, error);
+        }
+    }
+}
+
+#pragma mark Exposure
+
+- (void) exposureAtPoint:(CGPoint)point
+{
+    //NSLog(@"Exposuring at point %@", NSStringFromCGPoint(point));
+    
+    AVCaptureDevice *device = _deviceInput.device;
+    if (device.isExposurePointOfInterestSupported) {
+        NSError *error;
+        if ([device lockForConfiguration:&error]) {
+            device.exposurePointOfInterest = point;
+            device.exposureMode = AVCaptureExposureModeContinuousAutoExposure;
             [device unlockForConfiguration];
         }
         
